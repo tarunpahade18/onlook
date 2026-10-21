@@ -22,6 +22,7 @@ import { InsertManager } from './insert';
 import { MoveManager } from './move';
 import { OverlayManager } from './overlay';
 import { PagesManager } from './pages';
+import { RequirementsManager } from './requirements';
 import { type SandboxManager } from './sandbox';
 import { ScreenshotManager } from './screenshot';
 import { SnapManager } from './snap';
@@ -66,6 +67,7 @@ export class EditorEngine {
     readonly font: FontManager = new FontManager(this);
     readonly pages: PagesManager = new PagesManager(this);
     readonly frames: FramesManager = new FramesManager(this);
+    readonly requirements: RequirementsManager = new RequirementsManager(this);
     readonly frameEvent: FrameEventManager = new FrameEventManager(this);
     readonly screenshot: ScreenshotManager = new ScreenshotManager(this);
     readonly snap: SnapManager = new SnapManager(this);
@@ -94,6 +96,7 @@ export class EditorEngine {
     clear() {
         this.elements.clear();
         this.frames.clear();
+        this.requirements.clear();
         this.action.clear();
         this.overlay.clear();
         this.ast.clear();

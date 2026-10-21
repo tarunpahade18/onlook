@@ -2,7 +2,7 @@ import React, { memo, useEffect, useRef, useState } from 'react';
 import { nanoid } from 'nanoid';
 
 import type { ChatMessage, GitMessageCheckpoint } from '@onlook/models';
-import { ChatType, MessageCheckpointType } from '@onlook/models';
+import { ChatType, MessageCheckpointType, RequirementStatus } from '@onlook/models';
 import { Button } from '@onlook/ui/button';
 import {
     DropdownMenu,
@@ -25,6 +25,7 @@ import { observer } from 'mobx-react-lite';
 import { SentContextPill } from '../context-pills/sent-context-pill';
 import { MessageContent } from './message-content';
 import { MultiBranchRevertModal } from './multi-branch-revert-modal';
+import { RequirementsModal } from './requirements-modal';
 
 interface UserMessageProps {
     onEditMessage: EditMessage;
@@ -50,10 +51,33 @@ const UserMessageComponent = ({ onEditMessage, message }: UserMessageProps) => {
     const [isComposing, setIsComposing] = useState(false);
     const [isRestoring, setIsRestoring] = useState(false);
     const [isMultiBranchModalOpen, setIsMultiBranchModalOpen] = useState(false);
+    const [isRequirementsModalOpen, setIsRequirementsModalOpen] = useState(false);
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const gitCheckpoints =
         message.metadata?.checkpoints?.filter((s) => s.type === MessageCheckpointType.GIT) ?? [];
+    const requirements = editorEngine.requirements.requirements;
+    const requirementResults = editorEngine.requirements.getResults(message.id);
+
+    const requirementSummary = requirements.reduce(
+        (summary, requirement) => {
+            const results = requirementResults.filter(
+                (result) => result.requirementId === requirement.id,
+            );
+            if (results.some((result) => result.status === RequirementStatus.FAIL)) {
+                summary.fail += 1;
+            } else if (
+                results.length === 0 ||
+                results.some((result) => result.status === RequirementStatus.UNKNOWN)
+            ) {
+                summary.unknown += 1;
+            } else {
+                summary.pass += 1;
+            }
+            return summary;
+        },
+        { pass: 0, fail: 0, unknown: 0 },
+    );
 
     // Legacy checkpoints (created before multi-branch support) don't have branchId.
     // If any exist, fall back to simple single-branch restore UI.
@@ -245,6 +269,42 @@ const UserMessageComponent = ({ onEditMessage, message }: UserMessageProps) => {
                         />
                     )}
                 </div>
+                {gitCheckpoints.length > 0 && (
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                        <button
+                            onClick={() => setIsRequirementsModalOpen(true)}
+                            className="text-micro text-foreground-secondary hover:text-foreground border-border/50 hover:border-border flex items-center gap-1 rounded-md border px-2 py-1 transition-colors"
+                        >
+                            <Icons.CheckCircled className="h-3.5 w-3.5" />
+                            Requirements
+                        </button>
+                        {requirements.length > 0 && requirementResults.length > 0 ? (
+                            <div className="text-micro flex items-center gap-2">
+                                {requirementSummary.fail > 0 && (
+                                    <span className="text-red-300">
+                                        {requirementSummary.fail} fail
+                                    </span>
+                                )}
+                                {requirementSummary.unknown > 0 && (
+                                    <span className="text-yellow-200">
+                                        {requirementSummary.unknown} unknown
+                                    </span>
+                                )}
+                                {requirementSummary.pass > 0 && (
+                                    <span className="text-teal-200">
+                                        {requirementSummary.pass} pass
+                                    </span>
+                                )}
+                            </div>
+                        ) : (
+                            requirements.length > 0 && (
+                                <span className="text-micro text-muted-foreground">
+                                    {requirements.length} configured
+                                </span>
+                            )
+                        )}
+                    </div>
+                )}
             </div>
             {gitCheckpoints.length > 0 && (
                 <div className="absolute top-1/2 left-2 -translate-y-1/2">
@@ -326,6 +386,11 @@ const UserMessageComponent = ({ onEditMessage, message }: UserMessageProps) => {
                     )}
                 </div>
             )}
+            <RequirementsModal
+                open={isRequirementsModalOpen}
+                onOpenChange={setIsRequirementsModalOpen}
+                messageId={message.id}
+            />
         </div>
     );
 };

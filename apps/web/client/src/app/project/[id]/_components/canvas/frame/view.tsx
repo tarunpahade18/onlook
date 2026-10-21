@@ -246,6 +246,7 @@ export const FrameComponent = observer(
                     handleBodyReady: promisifyMethod(penpalChild?.handleBodyReady),
                     captureScreenshot: promisifyMethod(penpalChild?.captureScreenshot),
                     buildLayerTree: promisifyMethod(penpalChild?.buildLayerTree),
+                    checkRequirements: promisifyMethod(penpalChild?.checkRequirements),
                 };
             }, [penpalChild]);
 

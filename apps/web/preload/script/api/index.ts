@@ -23,6 +23,7 @@ import { drag, dragAbsolute, endAllDrag, endDrag, endDragAbsolute, startDrag } f
 import { getComputedStyleByDomId } from './elements/style';
 import { editText, isChildTextEditable, startEditingText, stopEditingText } from './elements/text';
 import { handleBodyReady } from './ready';
+import { checkRequirements } from './requirements';
 import { captureScreenshot } from './screenshot';
 import { setFrameId, setBranchId } from './state';
 import { updateStyle } from './style';
@@ -49,6 +50,7 @@ const rawMethods = {
     getFirstOnlookElement,
     captureScreenshot,
     buildLayerTree,
+    checkRequirements,
 
     // Elements
     getElementAtLoc,

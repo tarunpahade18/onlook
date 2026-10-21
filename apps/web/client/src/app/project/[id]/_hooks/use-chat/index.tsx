@@ -282,6 +282,10 @@ export function useChat({ conversationId, projectId, initialMessages }: UseChatP
                         ),
                     ),
                 );
+
+                if (editorEngine.requirements.hasRequirements) {
+                    void editorEngine.requirements.runChecks(lastUserMessage.id);
+                }
             };
 
             const cleanupContext = async () => {

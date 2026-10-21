@@ -1,11 +1,11 @@
 ---
 title: Figma to Onlook
-description: Export Figma designs directly into Onlook
+description: Import Figma designs directly into Onlook
 ---
 
 # Figma to Onlook
 
-Export Figma designs directly into Onlook. No developers needed. This guide shows you how to structure your design, export it, and turn it into a working React application with Onlook.
+Import Figma designs directly into Onlook. No developers needed. This guide shows you how to structure your design, upload a `.fig` file, and turn it into a working React application with Onlook.
 
 {/* ![Figma to Onlook Banner](/images/figma-to-onlook-banner.png) */}
 *Transform your Figma designs into working code with Onlook*
@@ -52,10 +52,14 @@ For smooth importing, your Figma file needs to be well-organized. Here's how to 
 
 ### 2. Import into Onlook
 
-1. Export your Figma design as SVG or PNG
-2. Open Onlook and create a new project
-3. Import your design assets
-4. Use Onlook's tools to recreate the design as React components
+1. In Figma, choose **File > Save local copy** to download a `.fig` file
+2. In Onlook, open **Projects > Import** and choose **Import a Figma File**
+3. Upload the `.fig` file and select up to five frames to recreate
+4. Add optional instructions, then choose **Create project**
+
+Onlook parses the file in your browser and extracts the selected frames' layout, text, colors, fonts, and images. The file thumbnail and extracted design context are sent to the AI to generate a new Next.js project. This is an AI approximation rather than a pixel-perfect Figma render, so review and refine the result in the editor.
+
+If you prefer a manual workflow, export a frame as SVG or PNG and add it as image context when creating a project.
 
 ### 3. Refine in Onlook
 
